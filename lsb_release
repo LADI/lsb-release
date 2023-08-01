@@ -7,6 +7,7 @@
 # Modified for SUSE Linux products by Thorsten Kukuk
 #
 # Copyright (C) 2023 Nedko Arnaudov
+# Modified for LADIOS (LADI project)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,7 +34,7 @@
 ###############################################################################
 
 # This script version
-SCRIPTVERSION="3.1"
+SCRIPTVERSION="3.1-LADI"
 
 # Defines the data files
 INFO_LSB_FILE="/etc/lsb-release"              # where to get LSB version
