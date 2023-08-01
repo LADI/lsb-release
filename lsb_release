@@ -6,6 +6,8 @@
 # Originally by Dominique MASSONIE <mdomi@users.sourceforge.net>
 # Modified for SUSE Linux products by Thorsten Kukuk
 #
+# Copyright (C) 2023 Nedko Arnaudov
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -52,6 +54,9 @@ MSG_DISTID="Distributor ID:\t"
 MSG_DISTDESC="Description:\t"
 MSG_DISTREL="Release:\t"
 MSG_DISTCODE="Codename:\t"
+MSG_HOMEPAGE_URL="WWW Homepage:\t"
+MSG_SUPPORT_URL="Support:\t"
+MSG_BUGREPORT_URL="Bug reports:\t"
 MSG_NA="n/a"
 MSG_NONE="(none)"
 MSG_RESULT="" # contains the result in case short output selected
@@ -68,6 +73,7 @@ DisplayProgramVersion() {
     echo "Copyright (C) 2000, 2002, 2004 Free Standards Group, Inc."
     echo "Copyright (C) 2017 SUSE Linux GmbH"
     echo "Copyright (C) 2022 SUSE Software Solutions Germany GmbH"
+    echo "Copyright (C) 2023 Nedko Arnaudov"
     echo
     echo "This is free software; see the source for copying conditions.  There is NO"
     echo "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
@@ -96,6 +102,12 @@ Usage() {
     echo "    Display the release number of the distribution."
     echo "  -c, --codename"
     echo "    Display the codename according to the distribution release."
+    echo "  -w, --homepage"
+    echo "    Display the distribution WWW homepage URL."
+    echo "  -u, --support"
+    echo "    Display the distribution sUpport URL."
+    echo "  -b, --bugreport"
+    echo "    Display the distribution Bugreport URL."
     echo "  -a, --all"
     echo "    Display all of the above information."
     echo "  -s, --short"
@@ -136,6 +148,9 @@ EnhancedGetopt() {
         -d|--description) ARG_D="y"; NB_ARG="y"; shift;;
         -i|--id) ARG_I="y"; NB_ARG="y"; shift;;
         -r|--release) ARG_R="y"; NB_ARG="y"; shift;;
+        -w|--homepage) ARG_W="y"; shift;;
+        -u|--support) ARG_U="y"; shift;;
+        -b|--bugreport) ARG_B="y"; shift;;
         -s|--short) ARG_S="y"; shift;;
         -v|--version) ARG_V="y"; NB_ARG="y"; shift;;
         -p|--program_version) DisplayProgramVersion;;
@@ -309,6 +324,35 @@ DisplayCodename() {
     fi
 }
 
+# Display the distribution WWW homepage URL
+DisplayHomepageURL() {
+    if [ -z "$ARG_S" ]
+    then
+        echo -e "$MSG_HOMEPAGE_URL${HOME_URL}"
+    else
+        MSG_RESULT="$MSG_RESULT${MSG_RESULT:+ }${HOME_URL}"
+    fi
+}
+
+# Display the distribution sUpport URL
+DisplaySupportURL() {
+    if [ -z "$ARG_S" ]
+    then
+        echo -e "$MSG_SUPPORT_URL${SUPPORT_URL}"
+    else
+        MSG_RESULT="$MSG_RESULT${MSG_RESULT:+ }${SUPPORT_URL}"
+    fi
+}
+
+# Display the distribution Bugreport URL
+DisplayBugreportURL() {
+    if [ -z "$ARG_S" ]
+    then
+        echo -e "$MSG_BUGREPORT_URL${BUG_REPORT_URL}"
+    else
+        MSG_RESULT="$MSG_RESULT${MSG_RESULT:+ }${BUG_REPORT_URL}"
+    fi
+}
 
 ###############################################################################
 #     MAIN
@@ -334,6 +378,9 @@ then
     [ -z "$ARG_I" ] && ARG_I="y"
     [ -z "$ARG_R" ] && ARG_R="y"
     [ -z "$ARG_V" ] && ARG_V="y"
+    [ -z "$ARG_W" ] && ARG_W="y"
+    [ -z "$ARG_U" ] && ARG_U="y"
+    [ -z "$ARG_B" ] && ARG_B="y"
 fi
 
 # Initialization
@@ -346,6 +393,9 @@ GetDistribInfo
 [ -n "$ARG_D" ] && DisplayDescription
 [ -n "$ARG_R" ] && DisplayRelease
 [ -n "$ARG_C" ] && DisplayCodename
+[ -n "$ARG_W" ] && DisplayHomepageURL
+[ -n "$ARG_U" ] && DisplaySupportURL
+[ -n "$ARG_B" ] && DisplayBugreportURL
 
 [ -n "$ARG_S" ] && echo "$MSG_RESULT"
 
