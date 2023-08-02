@@ -124,14 +124,15 @@ EnhancedGetopt() {
     getopt -T >/dev/null 2>&1             # is getopt the enhanced one ?
     if [ $? = 4 ]
     then                                  # Yes, advanced args ALLOWED
-        OPT=$(getopt -o acdhirsvp                                             \
---long all,codename,description,help,id,release,short,version,program_version \
+        OPT=$(getopt -o acdhirsvpwub                                          \
+--long all,codename,description,help,id,release,short,version,program_version,\
+homepage,support,bugreport \
               -n 'lsb_release'                                                \
               -- "$@")
     else                                  # No, advanced args NOT allowed
         # convert (if needed) the enhanced options into basic ones
         MYARGS=$(echo "$@" | sed -e "/--/s/-\(-[[:alnum:]]\)[[:alnum:]]*/\1/g")
-        OPT=$(getopt -o acdhirsvp                                             \
+        OPT=$(getopt -o acdhirsvpwub                                          \
                      -n 'lsb_release'                                         \
                      -- "$MYARGS")
     fi
@@ -260,6 +261,9 @@ GetDistribInfo() {
     [ -n "$ARG_D" ] && [ -z "$DISTRIB_DESCRIPTION" ] && NO="y"
     [ -z "$NO" ] && [ -n "$ARG_I" ] && [ -z "$DISTRIB_ID" ] && NO="y"
     [ -z "$NO" ] && [ -n "$ARG_R" ] && [ -z "$DISTRIB_RELEASE" ] && NO="y"
+    [ -z "$NO" ] && [ -n "$ARG_W" ] && [ -z "$HOME_URL" ] && NO="y"
+    [ -z "$NO" ] && [ -n "$ARG_U" ] && [ -z "$SUPPORT_URL" ] && NO="y"
+    [ -z "$NO" ] && [ -n "$ARG_B" ] && [ -z "$BUG_REPORT_URL" ] && NO="y"
     [ -z "$NO" ] && [ -n "$ARG_C" ] && [ -z "$DISTRIB_CODENAME" ] && NO="y"
 
     if [ -n "$NO" ]
