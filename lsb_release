@@ -58,6 +58,7 @@ MSG_DISTCODE="Codename:\t"
 MSG_HOMEPAGE_URL="WWW Homepage:\t"
 MSG_SUPPORT_URL="Support:\t"
 MSG_BUGREPORT_URL="Bug reports:\t"
+MSG_LOWERCASE_DISTID="Lowercase Name:\t"
 MSG_NA="n/a"
 MSG_NONE="(none)"
 MSG_RESULT="" # contains the result in case short output selected
@@ -109,6 +110,9 @@ Usage() {
     echo "    Display the distribution sUpport URL."
     echo "  -b, --bugreport"
     echo "    Display the distribution Bugreport URL."
+    echo "  -n,--lowercase_name"
+    # '(echo $(lsb_release -is)-$(lsb_release -rs) | tr "[:upper:]" "[:lower:]")'
+    echo "    Display the distro lowercase name (with revision)."
     echo "  -a, --all"
     echo "    Display all of the above information."
     echo "  -s, --short"
@@ -124,15 +128,15 @@ EnhancedGetopt() {
     getopt -T >/dev/null 2>&1             # is getopt the enhanced one ?
     if [ $? = 4 ]
     then                                  # Yes, advanced args ALLOWED
-        OPT=$(getopt -o acdhirsvpwub                                          \
+        OPT=$(getopt -o acdhirsvpwubn                                         \
 --long all,codename,description,help,id,release,short,version,program_version,\
-homepage,support,bugreport \
+homepage,support,bugreport,lowercase_name \
               -n 'lsb_release'                                                \
               -- "$@")
     else                                  # No, advanced args NOT allowed
         # convert (if needed) the enhanced options into basic ones
         MYARGS=$(echo "$@" | sed -e "/--/s/-\(-[[:alnum:]]\)[[:alnum:]]*/\1/g")
-        OPT=$(getopt -o acdhirsvpwub                                          \
+        OPT=$(getopt -o acdhirsvpwubb                                         \
                      -n 'lsb_release'                                         \
                      -- "$MYARGS")
     fi
@@ -153,6 +157,7 @@ homepage,support,bugreport \
         -w|--homepage) ARG_W="y"; shift;;
         -u|--support) ARG_U="y"; shift;;
         -b|--bugreport) ARG_B="y"; shift;;
+        -n|--lowecase_name) ARG_N="y"; shift;;
         -s|--short) ARG_S="y"; shift;;
         -v|--version) ARG_V="y"; NB_ARG="y"; shift;;
         -p|--program_version) DisplayProgramVersion;;
@@ -261,6 +266,7 @@ GetDistribInfo() {
     [ -n "$ARG_D" ] && [ -z "$DISTRIB_DESCRIPTION" ] && NO="y"
     [ -z "$NO" ] && [ -n "$ARG_I" ] && [ -z "$DISTRIB_ID" ] && NO="y"
     [ -z "$NO" ] && [ -n "$ARG_R" ] && [ -z "$DISTRIB_RELEASE" ] && NO="y"
+    [ -z "$NO" ] && [ -n "$ARG_N" ] && [ -z "$DISTRIB_RELEASE" ] && NO="y"
     [ -z "$NO" ] && [ -n "$ARG_W" ] && [ -z "$HOME_URL" ] && NO="y"
     [ -z "$NO" ] && [ -n "$ARG_U" ] && [ -z "$SUPPORT_URL" ] && NO="y"
     [ -z "$NO" ] && [ -n "$ARG_B" ] && [ -z "$BUG_REPORT_URL" ] && NO="y"
@@ -359,6 +365,17 @@ DisplayBugreportURL() {
     fi
 }
 
+DisplayLowercaseID() {
+    # '(echo $(lsb_release -is)-$(lsb_release -rs) | tr "[:upper:]" "[:lower:]")'
+    LOWERCASE_DISTRIB_ID=$(echo $DISTRIB_ID | tr "[:upper:]" "[:lower:]")-$DISTRIB_RELEASE
+    if [ -z "$ARG_S" ]
+    then
+        echo -e "$MSG_LOWERCASE_DISTID$LOWERCASE_DISTRIB_ID"
+    else
+        MSG_RESULT="$MSG_RESULT${MSG_RESULT:+ }$LOWERCASE_DISTRIB_ID"
+    fi
+}
+
 ###############################################################################
 #     MAIN
 ###############################################################################
@@ -386,6 +403,7 @@ then
     [ -z "$ARG_W" ] && ARG_W="y"
     [ -z "$ARG_U" ] && ARG_U="y"
     [ -z "$ARG_B" ] && ARG_B="y"
+    [ -z "$ARG_N" ] && ARG_N="y"
 fi
 
 # Initialization
@@ -401,6 +419,7 @@ GetDistribInfo
 [ -n "$ARG_W" ] && DisplayHomepageURL
 [ -n "$ARG_U" ] && DisplaySupportURL
 [ -n "$ARG_B" ] && DisplayBugreportURL
+[ -n "$ARG_N" ] && DisplayLowercaseID
 
 [ -n "$ARG_S" ] && echo "$MSG_RESULT"
 
